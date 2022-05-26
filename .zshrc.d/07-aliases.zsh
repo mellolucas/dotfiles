@@ -20,6 +20,9 @@ alias gco="git checkout"
 alias gcs="git commit -S -m"
 alias gpr="hub pull-request"
 
+# IaC ----------------------------------------
+alias ansp="ansible-playbook -v"
+
 # Containers ----------------------------------------
 alias k8="kubectl"
 
