@@ -1,0 +1,53 @@
+[global_config]
+  focus = system
+  title_hide_sizetext = True
+  title_transmit_fg_color = "#f8f8f2"
+  title_transmit_bg_color = "#6272a4"
+  title_receive_fg_color = "#0b0d0f"
+  title_receive_bg_color = "#79de71"
+  title_inactive_fg_color = "#282a36"
+  title_inactive_bg_color = "#44475a"
+  inactive_color_offset = 0.61
+  enabled_plugins = ActivityWatch, InactivityWatch, CommandNotify, LaunchpadBugURLHandler, LaunchpadCodeURLHandler
+  suppress_multiple_term_dialog = True
+  case_sensitive = False
+  invert_search = True
+[keybindings]
+  zoom_in = <Primary>equal
+  zoom_normal = <Primary>0
+  zoom_in_all = <Primary>plus
+  zoom_out_all = <Primary>underscore
+  zoom_normal_all = <Primary>parenright
+  split_horiz = <Shift><Alt>k
+  split_vert = <Shift><Alt>l
+  close_term = <Alt>q
+  resize_up = <Shift><Alt>Up
+  resize_down = <Shift><Alt>Down
+  resize_left = <Shift><Alt>Left
+  resize_right = <Shift><Alt>Right
+  scaled_zoom = <Primary><Shift>z
+  broadcast_off = <Alt>o
+  broadcast_group = <Alt>g
+  broadcast_all = <Alt>a
+[profiles]
+  [[default]]
+    background_color = "#282a36"
+    background_darkness = 0.85
+    background_type = transparent
+    cursor_color = "#bd93f9"
+    cursor_color_fg = False
+    font = Source Code Pro 11
+    foreground_color = "#f8f8f2"
+    palette = "#262626:#e356a7:#42e66c:#e4f34a:#9b6bdf:#e64747:#75d7ec:#efa554:#7a7a7a:#ff79c6:#50fa7b:#f1fa8c:#bd93f9:#ff5555:#8be9fd:#ffb86c"
+    bold_is_bright = True
+    background_image = None
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type = Window
+      parent = ""
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+      profile = default
+[plugins]
