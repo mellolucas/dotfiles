@@ -11,8 +11,8 @@ export PATH
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
 
 # ZSH paths ----------------------------------------
-export ZSH="$HOME/projects/dotfiles/.ohmyzsh.d"                # Path to oh-my-zsh installation
-export ZSH_CUSTOM="$HOME/projects/dotfiles/.ohmyzsh_custom.d"  # Path to oh-my-zsh user mods
+export ZSH="$HOME/.ohmyzsh.d"                # Path to oh-my-zsh installation
+export ZSH_CUSTOM="$HOME/.ohmyzsh_custom.d"  # Path to oh-my-zsh user mods
 
 # Default Apps ----------------------------------------
 export EDITOR=$(which nvim || which vim || which vi || which nano) 2>/dev/null
