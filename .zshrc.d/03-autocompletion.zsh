@@ -32,7 +32,7 @@ zstyle ':completion:*' insert-tab pending                                       
 _comp_options+=(globdots)                                                       # include hidden files
 
 # Specific Completions ----------------------------------------
-for completion ($ZSH/completions/*.zsh) source $completion # Source completions
+# for completion ($ZSH/completions/*.zsh) source $completion # Source completions
 
 
 # List and examples: https://thevaluable.dev/zsh-completion-guide-examples/ 
