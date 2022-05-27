@@ -18,17 +18,23 @@
   zoom_in_all = <Primary>plus
   zoom_out_all = <Primary>underscore
   zoom_normal_all = <Primary>parenright
-  split_horiz = <Shift><Alt>k
-  split_vert = <Shift><Alt>l
+  go_up = <Alt>i
+  go_down = <Alt>k
+  go_left = <Alt>j
+  go_right = <Alt>l
+  split_horiz = <Alt>Down
+  split_vert = <Alt>Right
   close_term = <Alt>q
   resize_up = <Shift><Alt>Up
   resize_down = <Shift><Alt>Down
   resize_left = <Shift><Alt>Left
   resize_right = <Shift><Alt>Right
+  move_tab_left = <Primary><Shift>Page_Up
   scaled_zoom = <Primary><Shift>z
   broadcast_off = <Alt>o
   broadcast_group = <Alt>g
   broadcast_all = <Alt>a
+  layout_launcher = <Primary><Alt>l
 [profiles]
   [[default]]
     background_color = "#282a36"
@@ -46,6 +52,7 @@
     [[[window0]]]
       type = Window
       parent = ""
+      size = 1024, 768
     [[[child1]]]
       type = Terminal
       parent = window0
