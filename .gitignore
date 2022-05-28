@@ -20,3 +20,7 @@ Thumbs.db
 # Files that might appear on external disks ------------------------------------
 .Spotlight-V100
 .Trashes
+
+# vim-plug directories ---------------------------------------------------------
+.vimrc.d/autoload/
+.vimrc.d/plugged/
