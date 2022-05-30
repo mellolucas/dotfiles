@@ -19,6 +19,7 @@ call plug#begin('~/.vimrc.d/plugged')
   Plug 'scrooloose/nerdtree'                                  " File system explorer
   Plug 'neoclide/coc.nvim', {'branch': 'release'}             " Completion, linting and formatting 
   Plug 'tpope/vim-fugitive'                                   " git wrapper (`:G` or `Git`)
-  Plug 'ryanoasis/vim-devicons'                               " Filetype icons support to nerdtree
   Plug 'dracula/vim', { 'as': 'dracula' }                     " Dracula theme and colorscheme
+  Plug 'nvim-lualine/lualine.nvim'                            " Statusline
+  Plug 'kyazdani42/nvim-web-devicons'                         " devicons support
 call plug#end()

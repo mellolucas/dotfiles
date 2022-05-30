@@ -3,10 +3,9 @@ set nocompatible              " explicitly disable compatibility to old-time vi
 set exrc                      " Override in projects with local .nvimrc
 filetype plugin on            " Allow scripts to run for specific file types
 filetype plugin indent on     "allow auto-indenting depending on file type
-set fileformat=unix           " use unix file format
+set encoding=utf8
 
 " Usage ----------------------------------------
-
 set splitright                " open new split panes to right
 set splitbelow                " open new split panes below
 set ttyfast                   " Speed up scrolling in Vim
