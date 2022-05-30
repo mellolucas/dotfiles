@@ -3,12 +3,16 @@ path+=('/$HOME/.local/bin')
 path+=('/$HOME/bin')
 export PATH
 
-# ZSH paths ----------------------------------------
+# ZSH Paths ----------------------------------------
 export ZSH=$HOME/.ohmyzsh.d                # Path to oh-my-zsh installation
 export ZSH_CUSTOM=$HOME/.ohmyzsh_custom.d  # Path to oh-my-zsh user mods
 
-# XDG base Dirs ----------------------------------------
+# XDG Base User Dirs ----------------------------------------
+export XDG_DATA_HOME=${XDG_CACHE_HOME:-$HOME/.local/share}
+export XDG_CONFIG_HOME=${XDG_CACHE_HOME:-$HOME/.config}
+export XDG_STATE_HOME=${XDG_CACHE_HOME:-$HOME/.local/state}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$HOME/.cache}
+# as per https://wiki.archlinux.org/title/XDG_Base_Directory#User_directories
 
 # Default Apps ----------------------------------------
 export EDITOR=$(which nvim || which vim || which vi || which nano) 2>/dev/null

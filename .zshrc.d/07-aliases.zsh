@@ -20,10 +20,11 @@ alias gco="git checkout"
 alias gcs="git commit -S -m"
 alias gpr="hub pull-request"
 
-# IaC ----------------------------------------
+# Applications ----------------------------------------
+[[ $(command -v nvim) ]] && alias vim="nvim"
+alias suvim="sudoedit"
 alias ansp="ansible-playbook -v"
-
-# Containers ----------------------------------------
+[[ $(command -v nerdctl) ]] && alias docker="nerdctl"
 alias k8="kubectl"
 
 # Misc ----------------------------------------
