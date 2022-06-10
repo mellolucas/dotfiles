@@ -2,6 +2,8 @@
 alias cls='clear'                       # clear screen
 alias ll="ls -pilhA --color=auto"       # list long
 alias lm="ls -phA --color=auto"         # list minimal
+alias llmd="ls -pilhAt --color=auto"    # list long sorting mod date
+alias lmmd="ls -phAt --color=auto"      # list minimal sorting mod date
 alias lgrep="ls -phA | grep"            # list pwd and grep
 alias ncat="cat --number"               # numbered cat
 alias shred="sudo shred -vuz"
