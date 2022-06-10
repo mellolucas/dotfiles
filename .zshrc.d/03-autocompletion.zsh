@@ -1,10 +1,10 @@
 # Load autocompletion ----------------------------------------
-# autoload -Uz compinit # Already called by ohmyzsh
-# compinit # Already called by ohmyzsh
+#autoload -Uz compinit # Already called by ohmyzsh
+#compinit # Already called by ohmyzsh
 
 # Main ----------------------------------------
-zstyle ':completion:*' completer _expand _complete _correct _approximate        # Completers
-# zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate  # Completers
+#zstyle ':completion:*' completer _expand _complete _correct _approximate        # Completers
+zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate  # Completers
 zstyle ':completion:*' use-cache on                                             # Caching
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"             # Caching dir
 zstyle ':completion:*' menu select=3 # Completion menu
@@ -15,7 +15,7 @@ zstyle ':completion:*' format '%d'                                              
 zstyle ':completion:*' group-name ''                                            # Grouped results
 zstyle ':completion:*' verbose true                                             # Display descriptions
 zstyle ':completion:*' list-colors ''                                           # Colored completion list
-# zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}                 # Colored completion list (ls default colors)
+#zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}                 # Colored completion list (ls default colors)
 zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more%s'                # List-prompt decoration
 zstyle ':completion:*' select-prompt '%S%l%s'                                   # Display in menu when list don't fit screen
 
@@ -32,7 +32,7 @@ zstyle ':completion:*' insert-tab pending                                       
 _comp_options+=(globdots)                                                       # include hidden files
 
 # Specific Completions ----------------------------------------
-# for completion ($ZSH/completions/*.zsh) source $completion # Source completions
+for completion ($ZSH/completions/*.zsh(N)) source $completions
 
 
 # List and examples: https://thevaluable.dev/zsh-completion-guide-examples/ 
