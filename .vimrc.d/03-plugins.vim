@@ -16,10 +16,11 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
 
 " Plugins ----------------------------------------
 call plug#begin('~/.vimrc.d/plugged')
-  Plug 'scrooloose/nerdtree'                                  " File system explorer
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}             " Completion, linting and formatting 
+  Plug 'scrooloose/nerdtree'                                  " file system explorer
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}             " completion, linting and formatting
+  Plug 'github/copilot.vim'                                   " Github Copilot
   Plug 'tpope/vim-fugitive'                                   " git wrapper (`:G` or `Git`)
   Plug 'dracula/vim', { 'as': 'dracula' }                     " Dracula theme and colorscheme
-  Plug 'nvim-lualine/lualine.nvim'                            " Statusline
+  Plug 'nvim-lualine/lualine.nvim'                            " statusline
   Plug 'kyazdani42/nvim-web-devicons'                         " devicons support
 call plug#end()
