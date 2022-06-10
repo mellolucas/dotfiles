@@ -1,7 +1,7 @@
 # History Storage ----------------------------------------
 HISTFILE=/$HOME/.zsh_history # History file path
-HISTSIZE=2814 # N commands loaded into memory form history file
-SAVEHIST=5628 # N commands stored in the history file
+HISTSIZE=7054 # N commands loaded into memory form history file
+SAVEHIST=14108 # N commands stored in the history file
 
 # History Options ----------------------------------------
 # setopt BANG_HIST                 # Treat the '!' character specially during expansion.
