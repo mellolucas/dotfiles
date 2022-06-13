@@ -1,0 +1,32 @@
+name: submodules-update
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  schedule:
+    - cron: '30 7,13,17 * * *'
+  repository_dispatch:
+    types: update
+
+jobs:
+  submodules-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout 
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: update submodules
+        run: |
+          git pull --recurse-submodules
+          git submodule update --remote --recursive
+      - name: commit and push
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "chore(auto): update submodules" || echo "No changes to commit"
+          git push
+
