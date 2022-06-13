@@ -1,8 +1,3 @@
-# PATH ----------------------------------------
-path+=('/$HOME/.local/bin')
-path+=('/$HOME/bin')
-export PATH
-
 # ZSH Paths ----------------------------------------
 export ZSH=$HOME/.ohmyzsh.d                # Path to oh-my-zsh installation
 export ZSH_CUSTOM=$HOME/.ohmyzsh_custom.d  # Path to oh-my-zsh user mods
@@ -29,3 +24,9 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LESSCHARSET=utf-8
+
+# PATH ----------------------------------------
+path+=('/$HOME/.local/bin')
+path+=('/$HOME/bin')
+path+=('/$ZSH_CUSTOM/plugins/zsh-completions/src')
+export PATH

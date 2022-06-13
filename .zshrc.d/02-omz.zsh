@@ -21,6 +21,8 @@ plugins=(
   git
   vi-mode
   1password
+  zsh-autosuggestions
+  zsh-syntax-highlighting
 )                                                           # Git prompt
 # Oh My Zsh | vi-mode | Options ----------
 VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
