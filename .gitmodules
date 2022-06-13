@@ -1,6 +1,12 @@
-[submodule "ohmyzsh"]
-	path = ohmyzsh
-	url = https://github.com/ohmyzsh/ohmyzsh
 [submodule ".ohmyzsh.d"]
 	path = .ohmyzsh.d
 	url = https://github.com/ohmyzsh/ohmyzsh
+[submodule ".ohmyzsh_custom.d/plugins/zsh-completions"]
+	path = .ohmyzsh_custom.d/plugins/zsh-completions
+	url = https://github.com/zsh-users/zsh-completions
+[submodule ".ohmyzsh_custom.d/plugins/zsh-syntax-highlighting"]
+	path = .ohmyzsh_custom.d/plugins/zsh-syntax-highlighting
+	url = https://github.com/zsh-users/zsh-syntax-highlighting
+[submodule ".ohmyzsh_custom.d/plugins/zsh-autosuggestions"]
+	path = .ohmyzsh_custom.d/plugins/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions
