@@ -6,7 +6,10 @@ alias llmd="ls -pilhAt --color=auto"    # list long sorting mod date
 alias lmmd="ls -phAt --color=auto"      # list minimal sorting mod date
 alias lgrep="ls -phA | grep"            # list pwd and grep
 alias ncat="cat --number"               # numbered cat
-alias shred="sudo shred -vuz"
+alias shred="sudo shred -vuz"           # prevent unwanted shredding
+
+# network -------------------------------------
+alias killvpn="sudo killall openvpn"
 
 # git ----------------------------------------
 alias g="git"
@@ -25,7 +28,7 @@ alias gco="git checkout"
 alias gcs="git commit -S -m"
 alias gpr="hub pull-request"
 
-# Applications ----------------------------------------
+# applications ----------------------------------------
 [[ $(command -v nvim) ]] && alias vim="nvim"
 alias svim="sudoedit"
 alias ansp="ansible-playbook"
@@ -34,7 +37,7 @@ alias vansp="ansible-playbook -v"
 alias nerd="nerdctl"
 alias k8="kubectl"
 
-# Misc ----------------------------------------
+# misc ----------------------------------------
 alias lol="base64 </dev/urandom | lolcat"
 alias matrix="cmatrix -b"
 alias zen="while :; do bonsai -l -b 2 -c oO0 -t 0.5; sleep 10; done"
