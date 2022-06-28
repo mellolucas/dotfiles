@@ -16,6 +16,7 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
 
 " Plugins ----------------------------------------
 call plug#begin('~/.vimrc.d/plugged')
+  Plug 'dhruvasagar/vim-table-mode'                           " auto table creator and formatter
   Plug 'scrooloose/nerdtree'                                  " file system explorer
   Plug 'neoclide/coc.nvim', {'branch': 'release'}             " completion, linting and formatting
   Plug 'github/copilot.vim'                                   " Github Copilot
