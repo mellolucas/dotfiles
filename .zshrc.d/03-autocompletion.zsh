@@ -1,3 +1,4 @@
+# syntax: :completion:<function>:<completer>:<command>:<argument>:<tag>
 # Load autocompletion ----------------------------------------
 #autoload -Uz compinit # Already called by ohmyzsh
 #compinit # Already called by ohmyzsh
@@ -22,7 +23,8 @@ zstyle ':completion:*' select-prompt '%S%l%s'                                   
 # Smart Completion System ----------------------------------------
 zstyle ':completion:*' file-sort name                                           # Files sorting parameter
 zstyle ':completion:*' matcher-list '' 'm:{[:lower:]}={[:upper:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=** r:|=** l:|=*'  # Completion matching control
-zstyle ':completion:*' ignore-parents parent pwd ..                             # Ignore wd when ../
+zstyle ':completion:*' ignore-parents parent pwd directory                      # Ignore pwd and parent when completing directories
+zstyle ':completion:*' special-dirs false                                       # Ignore special dirs
 zstyle ':completion:*' insert-unambiguous true                                  # Insert suggestion when unambiguous
 zstyle ':completion:*' expand prefix suffix                                     # Write path when unambiguous
 zstyle ':completion:*' list-suffixes true                                       # Show all ambiguous components
