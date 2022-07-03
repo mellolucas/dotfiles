@@ -42,6 +42,7 @@ alias nerd="nerdctl"
 alias k8="kubectl"
 
 # misc ----------------------------------------
+alias sshsocks="ssh -D 8282 -f -C -q -N"
 alias lol="base64 </dev/urandom | lolcat"
 alias matrix="cmatrix -b"
 alias zen="while :; do bonsai -l -b 2 -c oO0 -t 0.5; sleep 10; done"
