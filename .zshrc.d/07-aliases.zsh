@@ -42,6 +42,7 @@ alias nerd="nerdctl"
 alias k8="kubectl"
 alias pipreq="python -m pip install -r requirements.txt"
 alias pipup="python -m pip install -upgrade pip"
+alias pipinstall="python -m pip install"
 
 # misc ----------------------------------------
 alias sshsocks="ssh -D 8282 -f -C -q -N"
