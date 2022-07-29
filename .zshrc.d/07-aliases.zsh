@@ -40,7 +40,8 @@ alias tfo="terraform output"
 [[ $(command -v nerdctl) ]] && alias docker="nerdctl"
 alias nerd="nerdctl"
 alias k8="kubectl"
-alias pipreqs="python -m pip install -r requirements.txt"
+alias pipreq="python -m pip install -r requirements.txt"
+alias pipup="python -m pip install -upgrade pip"
 
 # misc ----------------------------------------
 alias sshsocks="ssh -D 8282 -f -C -q -N"
