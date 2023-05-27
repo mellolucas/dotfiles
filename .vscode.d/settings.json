@@ -17,7 +17,6 @@
         "plaintext": false,
         "markdown": true
     },
-    "gitlens.currentLine.enabled": false,
     "gitlens.hovers.currentLine.over": "line",
     "gitlens.hovers.enabled": false,
     "liveServer.settings.donotShowInfoMsg": true,
@@ -89,5 +88,6 @@
     "notebook.outline.showCodeCells": true,
     "zenMode.restore": false,
     "zenMode.hideLineNumbers": false,
-    "zenMode.hideStatusBar": false
+    "zenMode.hideStatusBar": false,
+    "gitlens.codeLens.enabled": false
 }
