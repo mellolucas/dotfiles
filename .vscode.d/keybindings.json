@@ -165,6 +165,11 @@
   },
   // Workbench navigation --------------------------------------
   {
+    "key": "alt+/",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "!editorFocus"
+  },
+  {
     "key": "alt+i",
     "command": "workbench.action.focusAboveGroup",
     "when": "editorTextFocus"
@@ -370,5 +375,10 @@
     "key": "ctrl+k ctrl+a",
     "command": "cSpell.addWordToWorkspaceDictionary",
     "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+/",
+    "command": "-gitlens.gitCommands",
+    "when": "!gitlens:disabled && config.gitlens.keymap == 'alternate'"
   }
 ]
