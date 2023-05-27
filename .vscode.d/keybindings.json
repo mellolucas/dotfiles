@@ -163,7 +163,7 @@
     "command": "addCursorsAtSearchResults",
     "when": "fileMatchOrMatchFocus && searchViewletVisible"
   },
-  // Panels navigation --------------------------------------
+  // Workbench navigation --------------------------------------
   {
     "key": "alt+i",
     "command": "workbench.action.focusAboveGroup",
@@ -228,6 +228,52 @@
 
   },
   {
+    "key": "'",
+    "command": "workbench.action.toggleSidebarVisibility"
+  },
+  {
+    "key": "ctrl+b",
+    "command": "-workbench.action.toggleSidebarVisibility"
+  },
+  {
+    "key": "alt+'",
+    "command": "workbench.action.toggleAuxiliaryBar"
+  },
+  {
+    "key": "ctrl+alt+b",
+    "command": "-workbench.action.toggleAuxiliaryBar"
+  },
+  {
+    "key": "ctrl+alt+1",
+    "command": "workbench.view.explorer",
+    "when": "viewContainer.workbench.view.explorer.enabled && sideBarVisible"
+  },
+  {
+    "key": "ctrl+alt+2",
+    "command": "workbench.view.search",
+    "when": "sideBarVisible && workbench.view.search.active && neverMatch =~ /doesNotMatch/"
+  },
+  {
+    "key": "ctrl+alt+3",
+    "command": "workbench.view.extension.bookmarks",
+    "when": "sideBarVisible"
+  },
+  {
+    "key": "ctrl+alt+4",
+    "command": "workbench.view.scm",
+    "when": "sideBarVisible && workbench.scm.active"
+  },
+  {
+    "key": "ctrl+alt+5",
+    "command": "workbench.view.extension.gitlens",
+    "when": "sideBarVisible"
+  },
+  {
+    "key": "ctrl+alt+6",
+    "command": "workbench.view.extension.copilot-labs",
+    "when": "sideBarVisible"
+  },
+  {
     "key": "ctrl+f4",
     "command": "workbench.action.closeActiveEditor",
     "when": "editorTextFocus"
@@ -236,6 +282,14 @@
     "key": "alt+q",
     "command": "workbench.action.closeActiveEditor",
     "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+meta+q",
+    "command": "workbench.action.quit"
+  },
+  {
+    "key": "ctrl+q",
+    "command": "-workbench.action.quit"
   },
   // Misc
   {
@@ -316,13 +370,5 @@
     "key": "ctrl+alt+[",
     "command": "-jupyter.gotoPrevCellInFile",
     "when": "editorTextFocus && jupyter.hascodecells && !jupyter.webExtension && !notebookEditorFocused"
-  },
-  {
-    "key": "ctrl+meta+q",
-    "command": "workbench.action.quit"
-  },
-  {
-    "key": "ctrl+q",
-    "command": "-workbench.action.quit"
   }
 ]

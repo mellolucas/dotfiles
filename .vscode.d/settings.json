@@ -83,5 +83,11 @@
     "editor.suggestSelection": "recentlyUsedByPrefix",
     "npm.keybindingsChangedWarningShown": true,
     "python.analysis.completeFunctionParens": true,
-    "jupyter.askForKernelRestart": false
+    "jupyter.askForKernelRestart": false,
+    "boot-java.rewrite.reconcile": true,
+    "window.restoreWindows": "none",
+    "notebook.outline.showCodeCells": true,
+    "zenMode.restore": false,
+    "zenMode.hideLineNumbers": false,
+    "zenMode.hideStatusBar": false
 }
