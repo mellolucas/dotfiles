@@ -228,6 +228,10 @@
 
   },
   {
+    "key": "ctrl+shift+alt+'",
+    "command": "workbench.action.togglePanel"
+  },
+  {
     "key": "'",
     "command": "workbench.action.toggleSidebarVisibility"
   },
