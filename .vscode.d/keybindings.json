@@ -297,11 +297,6 @@
   },
   // Misc
   {
-    "key": "ctrl+alt+g ctrl+alt+a",
-    "command": "cSpell.addWordToUserDictionary"
-  },
-  // Ext: Bookmarks --------------------------------------
-  {
     "key": "shift+alt+k",
     "command": "-bookmarks.shrinkSelection",
     "when": "editorTextFocus"
@@ -374,5 +369,10 @@
     "key": "ctrl+alt+[",
     "command": "-jupyter.gotoPrevCellInFile",
     "when": "editorTextFocus && jupyter.hascodecells && !jupyter.webExtension && !notebookEditorFocused"
+  },
+  {
+    "key": "ctrl+k ctrl+a",
+    "command": "cSpell.addWordToWorkspaceDictionary",
+    "when": "editorTextFocus"
   }
 ]
