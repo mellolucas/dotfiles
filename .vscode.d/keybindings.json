@@ -233,7 +233,7 @@
 
   },
   {
-    "key": "shift+alt+'",
+    "key": "ctrl+shift+alt+'",
     "command": "workbench.action.togglePanel"
   },
   {
@@ -241,7 +241,7 @@
     "command": "workbench.action.toggleSidebarVisibility"
   },
   {
-    "key": "ctrl+shift+alt+'",
+    "key": "shift+alt+'",
     "command": "workbench.action.toggleAuxiliaryBar"
   },
   {

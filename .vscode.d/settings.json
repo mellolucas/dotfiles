@@ -21,7 +21,6 @@
     "gitlens.hovers.enabled": false,
     "liveServer.settings.donotShowInfoMsg": true,
     "html.autoClosingTags": false,
-    "editor.autoClosingBrackets": "beforeWhitespace",
     "liveshare.connectionMode": "relay",
     "settingsSync.ignoredExtensions": [
     ],
@@ -49,6 +48,7 @@
         "iloc",
         "insertafter",
         "insertbefore",
+        "Jacksonized",
         "lineinfile",
         "lufom",
         "Mello",
@@ -65,6 +65,9 @@
     "editor.rulers": [
         {
             "column": 80
+        },
+        {
+            "column": 100
         }
     ],
     "bookmarks.saveBookmarksInProject": true,
