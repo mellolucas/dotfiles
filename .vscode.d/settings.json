@@ -114,5 +114,10 @@
     "workbench.editor.centeredLayoutFixedWidth": true,
     "editor.minimap.maxColumn": 80,
     "window.menuBarVisibility": "toggle",
-    "workbench.editor.tabSizing": "shrink"
+    "workbench.editor.tabSizing": "shrink",
+    "window.titleBarStyle": "custom",
+    "window.dialogStyle": "custom",
+    "window.title": "${dirty}${activeFolderShort}${separator}${activeEditorShort}  <-  ${profileName}@${rootName}",
+    "window.titleSeparator": "/",
+    "window.commandCenter": true
 }
