@@ -111,7 +111,7 @@
   {
     "key": "ctrl+right",
     "command": "cursorWordEndRight",
-    "when": "textInputFocus"
+    "when": "textInputFocus && !inlineSuggestionVisible "
   },
   // Move cursor and selection jumping ----------
   {
@@ -380,5 +380,25 @@
     "key": "alt+/",
     "command": "-gitlens.gitCommands",
     "when": "!gitlens:disabled && config.gitlens.keymap == 'alternate'"
+  },
+  {
+    "key": "shift+tab",
+    "command": "editor.action.inlineSuggest.acceptNextLine",
+    "when": "inlineSuggestionVisible && !editorReadonly && !editorTabMovesFocus"
+  },
+  {
+    "key": "ctrl+right",
+    "command": "-cursorWordEndRight",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "delete",
+    "command": "workbench.action.chat.remove",
+    "when": "inChat && !inChatInput"
+  },
+  {
+    "key": "delete",
+    "command": "-workbench.action.chat.remove",
+    "when": "inChat"
   }
 ]

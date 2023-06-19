@@ -93,5 +93,26 @@
     "zenMode.restore": false,
     "zenMode.hideLineNumbers": false,
     "zenMode.hideStatusBar": false,
-    "gitlens.codeLens.enabled": false
+    "gitlens.codeLens.enabled": false,
+    "terminal.integrated.splitCwd": "workspaceRoot",
+    "terminal.integrated.tabs.showActiveTerminal": "always",
+    "chat.editor.wordWrap": "on",
+    "editor.minimap.renderCharacters": false,
+    "gitlens.graph.minimap.additionalTypes": [
+        "localBranches",
+        "stashes",
+        "tags",
+        "remoteBranches"
+    ],
+    "editor.minimap.autohide": true,
+    "editor.minimap.size": "fill",
+    "bookmarks.useWorkaroundForFormatters": true,
+    "prettier.printWidth": 79,
+    "prettier.quoteProps": "consistent",
+    "prettier.tabWidth": 4,
+    "editor.cursorWidth": 1,
+    "workbench.editor.centeredLayoutFixedWidth": true,
+    "editor.minimap.maxColumn": 80,
+    "window.menuBarVisibility": "toggle",
+    "workbench.editor.tabSizing": "shrink"
 }
