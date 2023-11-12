@@ -249,36 +249,6 @@
     "command": "-workbench.action.toggleAuxiliaryBar"
   },
   {
-    "key": "ctrl+alt+1",
-    "command": "workbench.view.explorer",
-    "when": "viewContainer.workbench.view.explorer.enabled && sideBarVisible"
-  },
-  {
-    "key": "ctrl+alt+2",
-    "command": "workbench.view.search",
-    "when": "sideBarVisible && workbench.view.search.active && neverMatch =~ /doesNotMatch/"
-  },
-  {
-    "key": "ctrl+alt+3",
-    "command": "workbench.view.extension.bookmarks",
-    "when": "sideBarVisible"
-  },
-  {
-    "key": "ctrl+alt+4",
-    "command": "workbench.view.scm",
-    "when": "sideBarVisible && workbench.scm.active"
-  },
-  {
-    "key": "ctrl+alt+5",
-    "command": "workbench.view.extension.gitlens",
-    "when": "sideBarVisible"
-  },
-  {
-    "key": "ctrl+alt+6",
-    "command": "workbench.view.extension.copilot-labs",
-    "when": "sideBarVisible"
-  },
-  {
     "key": "ctrl+f4",
     "command": "workbench.action.closeActiveEditor",
     "when": "editorTextFocus"
