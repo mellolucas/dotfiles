@@ -241,7 +241,7 @@
     "command": "workbench.action.toggleSidebarVisibility"
   },
   {
-    "key": "shift+alt+'",
+    "key": "ctrl+alt+'",
     "command": "workbench.action.toggleAuxiliaryBar"
   },
   {
@@ -370,5 +370,30 @@
     "key": "delete",
     "command": "-workbench.action.chat.remove",
     "when": "inChat"
+  },
+  {
+    "key": "alt+'",
+    "command": "workbench.action.focusSideBar",
+    "when": "!sideBarVisible"
+  },
+  {
+    "key": "shift+alt+'",
+    "command": "workbench.action.focusActivityBar",
+    "when": "config.workbench.activityBar.location == 'hidden'"
+  },
+  {
+    "key": "shift+alt+'",
+    "command": "workbench.action.activityBarLocation.hide",
+    "when": "config.workbench.activityBar.location != 'hidden' && !sideBarVisible"
+  },
+  {
+    "key": "shift+alt+'",
+    "command": "workbench.action.activityBarLocation.side",
+    "when": "config.workbench.activityBar.location == 'hidden' || config.workbench.activityBar.location == 'top'"
+  },
+  {
+    "key": "shift+alt+'",
+    "command": "workbench.action.activityBarLocation.top",
+    "when": "config.workbench.activityBar.location != 'hidden' && config.workbench.activityBar.location != 'top' && sideBarVisible"
   }
 ]
