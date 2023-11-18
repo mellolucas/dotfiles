@@ -31,7 +31,7 @@
     "bookmarks.saveBookmarksInProject": true,
     "redhat.telemetry.enabled": false,
     "editor.fontFamily": "'FiraCode Nerd Font', 'monospace', monospace, 'Droid Sans Mono'",
-    "files.autoSave": "afterDelay",
+    "files.autoSave": "onFocusChange",
     "editor.wordWrapColumn": 120,
     "terminal.external.linuxExec": "terminator",
     "terminal.integrated.shellIntegration.enabled": true,
@@ -67,14 +67,13 @@
     "editor.cursorWidth": 1,
     "workbench.editor.centeredLayoutFixedWidth": true,
     "editor.minimap.maxColumn": 80,
-    "window.menuBarVisibility": "toggle",
     "workbench.editor.tabSizing": "shrink",
     "window.titleBarStyle": "custom",
     "window.dialogStyle": "custom",
     "window.title": "${dirty}${activeFolderShort}${separator}${activeEditorShort}  <-  ${profileName}@${rootName}",
     "window.titleSeparator": "/",
     "window.commandCenter": true,
-    "window.zoomLevel": 1,
+    "window.menuBarVisibility": "compact",
     "editor.renderLineHighlight": "all",
     "workbench.editor.highlightModifiedTabs": true,
     "diffEditor.ignoreTrimWhitespace": false,
@@ -87,18 +86,79 @@
     "editor.suggest.insertMode": "replace",
     "terminal.integrated.shellIntegration.suggestEnabled": true,
     "editor.suggest.selectionMode": "whenTriggerCharacter",
+    "editor.find.seedSearchStringFromSelection": "selection",
     "editor.quickSuggestions": {
         "other": "off"
     },
+    "search.showLineNumbers": true,
+    "search.smartCase": true,
     "workbench.view.alwaysShowHeaderActions": true,
+    "editor.foldingImportsByDefault": true,
+    "problems.showCurrentInStatus": true,
+    "dev.containers.dockerComposePath": "nerdctl compose",
+    "dev.containers.dockerPath": "nerdctl",
+    "better-comments.highlightPlainText": true,
+    "better-comments.tags": [
+
+        {
+            "tag": "!",
+            "color": "#FF2D00",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "?",
+            "color": "#3498DB",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "//",
+            "color": "#474747",
+            "strikethrough": true,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "todo",
+            "color": "#FF8C00",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "*",
+            "color": "#98C379",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        }
+    ],
     "npm.keybindingsChangedWarningShown": true,
     "[python]": {
         "python.analysis.completeFunctionParens": true,
         "jupyter.askForKernelRestart": false
     },
     "[java]": {
+        "java.saveActions.organizeImports": true,
+        "boot-java.change-detection.on": true,
         "editor.defaultFormatter": "redhat.java",
         "boot-java.rewrite.reconcile": true,
-        "boot-java.live-information.automatic-connection.on": false
+        "boot-java.live-information.automatic-connection.on": false,
+        "spring-boot.ls.problem.boot2.JAVA_AUTOWIRED_CONSTRUCTOR": "INFO",
+        "java.edit.validateAllOpenBuffersOnChanges": true,
+        "spring-boot.ls.problem.version-validation.SUPPORTED_OSS_VERSION": "INFO"
     }
 }
