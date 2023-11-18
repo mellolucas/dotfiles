@@ -1,5 +1,4 @@
 {
-    "editor.inlineSuggest.enabled": true,
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
     "editor.bracketPairColorization.enabled": true,
@@ -19,48 +18,6 @@
     },
     "gitlens.hovers.currentLine.over": "line",
     "gitlens.hovers.enabled": false,
-    "liveServer.settings.donotShowInfoMsg": true,
-    "html.autoClosingTags": false,
-    "liveshare.connectionMode": "relay",
-    "settingsSync.ignoredExtensions": [
-    ],
-    "settingsSync.ignoredSettings": [
-    ],
-    "remote.SSH.defaultExtensions": [
-        "formulahendry.auto-rename-tag",
-        "alefragnani.Bookmarks",
-        "streetsidesoftware.code-spell-checker",
-        "dracula-theme.theme-dracula",
-        "GitHub.copilot",
-        "eamodio.gitlens",
-        "PKief.material-icon-theme",
-        "eg2.vscode-npm-script",
-        "humao.rest-client"
-    ],
-    "cSpell.userWords": [
-        "bashrcd",
-        "blockinfile",
-        "displaylink",
-        "dotfiles",
-        "fileglob",
-        "gpgcheck",
-        "gpgkey",
-        "iloc",
-        "insertafter",
-        "insertbefore",
-        "Jacksonized",
-        "lineinfile",
-        "lufom",
-        "Mello",
-        "nonfree",
-        "seclists",
-        "splitlines",
-        "unsafe",
-        "wordlist",
-        "wordlists",
-        "yes",
-        "zshrcd"
-    ],
     "rest-client.enableTelemetry": false,
     "editor.rulers": [
         {
@@ -70,6 +27,7 @@
             "column": 100
         }
     ],
+    "editor.inlineSuggest.enabled": true,
     "bookmarks.saveBookmarksInProject": true,
     "redhat.telemetry.enabled": false,
     "editor.fontFamily": "'FiraCode Nerd Font', 'monospace', monospace, 'Droid Sans Mono'",
@@ -84,10 +42,6 @@
     "workbench.colorTheme": "Dracula",
     "editor.fontLigatures": true,
     "editor.suggestSelection": "recentlyUsedByPrefix",
-    "npm.keybindingsChangedWarningShown": true,
-    "python.analysis.completeFunctionParens": true,
-    "jupyter.askForKernelRestart": false,
-    "boot-java.rewrite.reconcile": true,
     "window.restoreWindows": "none",
     "notebook.outline.showCodeCells": true,
     "zenMode.restore": false,
@@ -122,5 +76,29 @@
     "window.commandCenter": true,
     "window.zoomLevel": 1,
     "editor.renderLineHighlight": "all",
-    "workbench.editor.highlightModifiedTabs": true
+    "workbench.editor.highlightModifiedTabs": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.suggest.matchOnWordStartOnly": false,
+    "editor.suggest.preview": true,
+    "editor.inlineSuggest.suppressSuggestions": true,
+    "editor.suggest.showStatusBar": true,
+    "editor.suggest.showIcons": true,
+    "editor.suggest.snippetsPreventQuickSuggestions": true,
+    "editor.suggest.insertMode": "replace",
+    "terminal.integrated.shellIntegration.suggestEnabled": true,
+    "editor.suggest.selectionMode": "whenTriggerCharacter",
+    "editor.quickSuggestions": {
+        "other": "off"
+    },
+    "workbench.view.alwaysShowHeaderActions": true,
+    "npm.keybindingsChangedWarningShown": true,
+    "[python]": {
+        "python.analysis.completeFunctionParens": true,
+        "jupyter.askForKernelRestart": false
+    },
+    "[java]": {
+        "editor.defaultFormatter": "redhat.java",
+        "boot-java.rewrite.reconcile": true,
+        "boot-java.live-information.automatic-connection.on": false
+    }
 }
