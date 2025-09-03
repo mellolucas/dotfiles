@@ -1,6 +1,6 @@
 # --- Authentication and Identity ---
 [user]
-  name = mellolucas
+  name = Lucas Mello
   email = 54722857+mellolucas@users.noreply.github.com
   signingKey = B03337DD39CDEE4C53ECDA96BEB73956C6F33233
   # useConfigOnly = true # Prevents git from guessing user identity
