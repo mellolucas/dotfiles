@@ -13,3 +13,11 @@
 **/*.backup.*
 
 !**/*.example
+
+# opencode runtime-generated files (plugin deps); never tracked
+opencode/.gitignore
+opencode/package.json
+opencode/package-lock.json
+opencode/bun.lock
+opencode/node_modules/
+
