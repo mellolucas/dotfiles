@@ -1,10 +1,12 @@
+# vim: ft=gitconfig
+
 # --- Authentication and Identity ---
 [user]
   useConfigOnly = true # Prevents git from guessing user identity
 
 # --- Git Core Configuration and Behavior ---
 [core]
-  autocrlf = false # Let .gitattributes or .gitconfig.* handle line endings
+  autocrlf = false # Line endings are per-project (.gitattributes); also guards against Git-for-Windows system config
 
 # --- Git Housekeeping and Maintenance ---
 # Keep Standardized
@@ -24,6 +26,7 @@
   default = simple # (default) Push current branch to the same name on remote
   autoSetupRemote = true # Auto set remote as upstream for current branch
   followTags = true # Push all local tags to the remote on any push
+  useForceIfIncludes = true # Make --force-with-lease also require local awareness of remote tip
 
 [fetch]
   prune = true # Remove remote-tracking branches that no longer exist on remote
@@ -42,11 +45,10 @@
   sort = version:refname # Sort tags by version
 
 [pretty]
-  compact = %C(auto)%m %h%d %s %C(dim black)·%C(reset dim italic) %ar by %an%C(auto)
-  compare = %C(auto)%m %h %C(dim yellow)^%p%C(auto)%d %s %C(dim black)·%C(reset dim italic) %ar by %an%C(auto)
-  audit = %C(auto)%m %h%d %s %C(dim black)·%C(reset dim italic) at %ad by [%an](%ae)%C(auto)
-  expanded = tbd
-  verbose = tbd
+  compact = %C(auto)%m% h%d% s %C(dim black)·%C(reset dim italic)% ar by% aN%C(auto)
+  truncated = %C(auto)%m%h%<(48,trunc)% s%C(dim black)·%C(reset dim italic)%ar by%<(8,trunc)% aN%C(auto)%+d
+  compare = %C(auto)%m% h %C(dim yellow)^%p%C(auto)%d% s %C(dim black)·%C(reset dim italic)% ar by% aN%C(auto)
+  audit = %C(auto)%m% h%d% s %C(dim black)·%C(reset dim italic) at% ad by [%an](%ae)%C(auto)
 
 [format]
   pretty = compact
@@ -66,6 +68,7 @@
 
 [merge]
   conflictStyle = zdiff3 # Add marker with content before either of the changes 
+  autoStash = true # Auto stash before merging and auto apply after
 
 [grep]
   lineNumber = true # Prefix the line number to matching lines
@@ -95,7 +98,22 @@
 
 # --- Git Aliases and Shortcuts ---
 [alias]
-  clone-smart = "!f() { repo=\"$1\"; repo=\"${repo#gh:}\"; repo=\"${repo#https://github.com/}\"; repo=\"${repo#git@github.com:}\"; repo=\"${repo%.git}\"; owner=\"${repo%%/*}\"; name=\"${repo##*/}\"; dest=\"$HOME/code/$owner/$name\"; if command -v gh >/dev/null 2>&1; then gh repo clone \"$repo\" \"$dest\"; else git clone \"https://github.com/$repo.git\" \"$dest\"; fi; }; f"
+  # Clone into ~/code/<owner>/<repo>; accepts gh:, https, ssh, or owner/repo forms
+  clone-smart = "!f() { \
+    repo=\"$1\"; \
+    repo=\"${repo#gh:}\"; \
+    repo=\"${repo#https://github.com/}\"; \
+    repo=\"${repo#git@github.com:}\"; \
+    repo=\"${repo%.git}\"; \
+    owner=\"${repo%%/*}\"; \
+    name=\"${repo##*/}\"; \
+    dest=\"$HOME/code/$owner/$name\"; \
+    if command -v gh >/dev/null 2>&1; then \
+      gh repo clone \"$repo\" \"$dest\"; \
+    else \
+      git clone \"https://github.com/$repo.git\" \"$dest\"; \
+    fi; \
+  }; f"
 
 # --- External Configuration Settings ---
 [core]
