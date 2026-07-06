@@ -10,12 +10,13 @@ export EDITOR="${EDITOR:-nvim}"
 export VISUAL="${VISUAL:-$EDITOR}"
 export PAGER="${PAGER:-less}"
 export LESS="${LESS:--FRX}"
+export LESSHISTFILE="${LESSHISTFILE:--}"
 
 path=(
   "$HOME/.local/bin"
-  "$HOME/bin"
   $path
 )
 
 typeset -U path PATH
 export PATH
+
