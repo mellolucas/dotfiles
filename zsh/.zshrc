@@ -1,6 +1,11 @@
 # Interactive shell only: history, completion, aliases, functions, prompt
 [[ -o interactive ]] || return
 
+# ---- Environment ----
+fpath=("$XDG_CONFIG_HOME/zsh/functions" $fpath)
+autoload -Uz "$XDG_CONFIG_HOME/zsh/functions"/*(.N:t)
+autoload -Uz add-zsh-hook
+
 # ---- History ----
 HISTFILE="$XDG_STATE_HOME/zsh/history"
 HISTSIZE=50000
@@ -8,7 +13,6 @@ SAVEHIST=50000
 
 mkdir -p "${HISTFILE:h}" "$XDG_CACHE_HOME/zsh"
 
-setopt append_history
 setopt inc_append_history_time
 setopt hist_ignore_dups
 setopt hist_ignore_space
@@ -20,6 +24,9 @@ setopt extended_history
 autoload -Uz compinit
 compinit -d "$XDG_CACHE_HOME/zsh/zcompdump"
 
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' menu select
+
 # ---- Behavior ----
 bindkey -v
 KEYTIMEOUT=1
@@ -30,12 +37,30 @@ setopt no_beep
 setopt auto_cd
 setopt ignoreeof
 
-# Integrate vim-mode with ghostty multiplexer
-local ghostty_config="$XDG_CONFIG_HOME/zsh/ghostty.zsh"
-if [[ -r "$ghostty_config" &&
-      "${(L)TERM_PROGRAM}" == "ghostty" && 
-      "$OSTYPE" == darwin* ]]; then
-  source "$ghostty_config"
+# ---- Integrations ----
+# Window navigation on vicmd maps to ghostty
+if [[ "${(L)TERM_PROGRAM}" == "ghostty" && "$OSTYPE" == darwin* &&
+      -r "$XDG_CONFIG_HOME/zsh/ghostty-vicmd-keymaps.zsh" ]]; then
+  source "$XDG_CONFIG_HOME/zsh/ghostty-vicmd-keymaps.zsh"
+fi
+
+# Fuzzy finding (ctrl-r history, ctrl-t files, alt-c dirs)
+if command -v fzf >/dev/null 2>&1; then
+  source <(fzf --zsh)
+fi
+
+# Auto git-glance custom function whenever the shell lands in a different repo
+if command -v git-glance >/dev/null 2>&1; then
+  typeset -g _git_glance_last=$(git rev-parse --show-toplevel 2>/dev/null)
+  _git-glance-chpwd() {
+    local top
+    top=$(git rev-parse --show-toplevel 2>/dev/null) || { _git_glance_last=''; return 0 }
+    [[ $top == $_git_glance_last ]] && return 0
+    _git_glance_last=$top
+    tput cup 0 0
+    git-glance
+  }
+  add-zsh-hook chpwd _git-glance-chpwd
 fi
 
 # ---- Prompt ----
@@ -45,37 +70,65 @@ zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:git:*' formats ' %F{magenta}%b%f'
 zstyle ':vcs_info:git:*' actionformats ' %F{magenta}%b|%a%f'
 
-precmd() {
+_vcs_info_precmd() {
   vcs_info
 }
+add-zsh-hook precmd _vcs_info_precmd
 
 PROMPT='%F{blue}%~%f${vcs_info_msg_0_}
 %(?.%F{green}.%F{red})❯%f '
 
-# Aesthetics
-if ls --color=auto -d . >/dev/null 2>&1; then
-  alias ls='ls --color=auto'
-fi
-
-if ls -G -d . >/dev/null 2>&1; then
+# ---- Aesthetics ----
+if ls --version >/dev/null 2>&1; then # GNU ls
+  alias ls='ls --color=auto --time-style=+%Y-%m-%dT%H:%M:%S%z'
+elif ls -G -d . >/dev/null 2>&1; then # BSD ls
   export CLICOLOR=1
+  alias ls='ls -D "%Y-%m-%dT%H:%M:%S%z"'
 fi
 
 # ---- Aliases ----
 alias dots='dotfiles'
+alias dotsup='dotfiles update'
+alias dotsws='dotfiles workspace'
+alias dotscode='dotfiles workspace'
+
+if command -v github-open>/dev/null 2>&1; then
+  alias ghopen='github-open'
+fi
+if command -v github-view >/dev/null 2>&1; then
+  alias ghview='github-view'
+fi
 
 alias v='$EDITOR'
 alias vi='$EDITOR'
 alias vim='$EDITOR'
 alias view='$EDITOR -R -M'
 
-alias ls='ls -D "%Y-%m-%dT%H:%M:%S%z"'
+alias mdv='glow -p'
+
+alias b='bat'
+alias bh='bat --plain --language=help'
+help() {
+  bh <<<$("$@" --help 2>&1)
+}
+
 alias ll='ls -plhA' # List long
 alias lli='ll -i'   # List long with inodes
 
-alias whiches='type -a' # `which` but all
+alias rg='rg --hidden --follow'
+alias rgf='rg --files-with-matches'
 
-alias g='git' 
+alias cmdv='command -v' 
+if ! command -v where >/dev/null 2>&1; then
+  alias where='type -a'
+fi
+alias cmdvs='where'
+
+if command -v git-glance >/dev/null 2>&1; then
+  alias gg='git-glance'
+fi
+
+alias g='git'
 alias gcl='git clone-smart' # Clone in `~/code/<owner>/<repo>`
 alias gf='git fetch --jobs=4'
 alias gft='gf --tags'
@@ -108,16 +161,8 @@ alias glgs='glg --compact-summary'                     # Topology + file modific
 alias glgsa='glgs --all --pretty=compare'                # Whole repository map + file modification stats
 alias glc='gl --graph --boundary --pretty=compare'   # Relational delta (strict use: `branch...branch`)
 
-alias rg='rg --hidden --follow'
-
 alias ocode='opencode'
 
-# Functions
-dotfiles-update() {
-  command dotfiles update "$@"
-}
-alias dotsup='dotfiles-update'
-
 # Local
-local local_config="$XDG_CONFIG_HOME/zsh/local.zsh"
-[[ -r "$local_config" ]] && source "$local_config"
+[[ -r "$XDG_CONFIG_HOME/zsh/local.zsh" ]] && source "$XDG_CONFIG_HOME/zsh/local.zsh"
+

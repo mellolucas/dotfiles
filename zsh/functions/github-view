@@ -1,0 +1,45 @@
+# vim: ft=zsh
+
+emulate -L zsh
+
+local target_dir=${${1:-$PWD}:A}
+local p=$target_dir
+
+[[ $p == */code/* ]] || {
+  print -u2 -- "github-view: path is not within a '/code/' directory"
+  return 1
+}
+
+p=${p#*/code/}
+IFS=/ read -r a b _ <<< "$p"
+local url="https://github.com/$a${b:+/$b}"
+
+# 1. Primary: Remote render
+if command -v glow >/dev/null 2>&1; then
+  glow -p "$url"
+  return 0
+fi
+
+# 2. Local Fallback: Local README
+setopt local_options nocaseglob nullglob
+local readmes=("$target_dir"/readme.md "$target_dir"/readme.txt "$target_dir"/readme)
+
+if (( ${#readmes} > 0 )); then
+  if command -v bat >/dev/null 2>&1; then
+    bat "${readmes[1]}"
+  else
+    less "${readmes[1]}"
+  fi
+  return 0
+fi
+
+# 3. Ultimate Fallback: Browser
+if command -v github-open >/dev/null 2>&1; then
+  github-open "$target_dir"
+  return $?
+fi
+
+# Failure: Exhausted all options
+print -u2 -- "github-view: cannot view repo (glow, local README, and github-open unavailable)"
+return 1
+

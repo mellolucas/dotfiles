@@ -1,0 +1,32 @@
+# vim: ft=zsh
+
+emulate -L zsh
+
+local p a b
+p=${${1:-$PWD}:A}
+
+[[ $p == */code/* ]] || {
+  print -u2 -- "github-open: path is not within a '/code/' directory"
+  return 1
+}
+
+p=${p#*/code/}
+IFS=/ read -r a b _ <<< "$p"
+local url="https://github.com/$a${b:+/$b}"
+
+# 1. macOS Native
+if [[ "$OSTYPE" == darwin* ]]; then
+  open -a Safari "$url"
+  return $?
+fi
+
+# 2. Linux / XDG Native
+if command -v xdg-open >/dev/null 2>&1; then
+  xdg-open "$url" >/dev/null 2>&1
+  return $?
+fi
+
+# Failure: Exhausted all options
+print -u2 -- "github-open: no suitable web browser launcher found"
+return 1
+
