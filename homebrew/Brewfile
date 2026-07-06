@@ -2,9 +2,12 @@ brew "mas" if system "defaults read MobileMeAccounts Accounts &>/dev/null"
 
 brew "git"
 brew "neovim"
-cask "ghostty" unless OS.wsl?
-brew "container" if OS.mac?
 brew "ripgrep"
+brew "fzf"
+brew "glow"
+brew "bat"
+cask "ghostty" if OS.mac?
+brew "container" if OS.mac?
 
 brew "lua-language-server"
 brew "biome"
@@ -17,7 +20,8 @@ brew "gopls"
 brew "gh"
 brew "opencode"
 
-cask "obsidian" unless OS.wsl?
+cask "obsidian" if OS.mac?
 
 local_brewfile = File.expand_path("local.Brewfile", __dir__)
 instance_eval(File.read(local_brewfile)) if File.exist?(local_brewfile)
+
