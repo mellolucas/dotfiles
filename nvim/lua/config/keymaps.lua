@@ -25,6 +25,10 @@ end, {
 -- Toggle: <leader>t*
 map("n", "<leader>th", "<cmd>set hlsearch!<CR>", { desc = "Toggle search highlighting" })
 map("n", "<leader>tw", "<cmd>set wrap!<CR>", { desc = "Toggle line wrap" })
+map("n", "<leader>td", function()
+  local config = vim.diagnostic.config()
+  vim.diagnostic.config({ virtual_text = not config.virtual_text })
+end, { desc = "Toggle inline diagnostics" })
 
 -- Git commands: <leader>g*
 
@@ -33,7 +37,6 @@ map("n", "<leader>bl", "<cmd>ls<CR>", { desc = "List active buffers" })
 map("n", "<leader>b-", "<C-^>", { desc = "Switch to alternative buffer" })
 map("n", "<leader>bww", "<cmd>w<CR>", { desc = "Save buffer" })
 map("n", "<leader>bwq", "<cmd>wq<CR>", { desc = "Save and quit" })
-map("n", "<leader>bqq", "<cmd>q!<CR>", { desc = "Force quit" })
 
 -- Explore: <leader>e
 map("n", "<leader>ee", vim.cmd.Explore, {
@@ -41,7 +44,8 @@ map("n", "<leader>ee", vim.cmd.Explore, {
 })
 
 -- Quit: <leader>q*
-map("n", "<leader>qq", "<cmd>q!<CR>", { desc = "Force quit" })
+map("n", "<leader>qq", "<cmd>q<CR>", { desc = "Quit" })
+map("n", "<leader>qqq", "<cmd>q!<CR>", { desc = "Force quit" })
 
 -- Window navigation: <leader>w*
 -- ghostty integrated split navigation
@@ -116,3 +120,4 @@ end
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], {
   desc = "Exit terminal mode",
 })
+
