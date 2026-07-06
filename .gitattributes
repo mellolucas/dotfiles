@@ -1,0 +1,3 @@
+# Normalize auto-detected text (LF in repo; OS EOL on checkout)
+*         text=auto eol=lf
+

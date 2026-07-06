@@ -1,10 +1,8 @@
-# --- Global defaults ---
-# Normalize auto-detected text (LF in repo; OS EOL on checkout)
-*         text=auto eol=lf
-
-# --- Cross-platform safe EOL overrides ---
-# Scripts
+# Cross-platform safe EOL overrides only.
+# Line-ending policy is a per-project concern (each repo's .gitattributes);
+# these additive rules just keep OS-bound scripts runnable everywhere.
 *.bat     text eol=crlf
 *.cmd     text eol=crlf
 
 *.sh      text eol=lf
+
