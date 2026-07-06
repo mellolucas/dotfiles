@@ -1,3 +1,5 @@
+# vim: ft=gitconfig
+
 [user]
   name = Your Profile Name
   email = your.login.username@example.com

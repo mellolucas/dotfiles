@@ -1,3 +1,5 @@
+# vim: ft=gitconfig
+
 [user]
   name = Trillian Astra
   email = 54722857+tricia-mcmillan@users.noreply.github.com
@@ -13,5 +15,11 @@
   format = ssh
 
 [gpg "ssh"]
-	allowedSignersFile = ~/.ssh/allowed_signers
+  allowedSignersFile = ~/.ssh/allowed_signers
+
+# One-time provisioning (copy this file to `personal` with your identity, then run):
+#   ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_personal -C "<email>"
+#   printf '%s ' "<email>" | cat - ~/.ssh/id_ed25519_personal.pub >> ~/.ssh/allowed_signers
+#   ssh-add --apple-use-keychain ~/.ssh/id_ed25519_personal # macOS; plain `ssh-add` elsewhere
+# Recommended in ~/.ssh/config under `Host *`: AddKeysToAgent yes (+ UseKeychain yes on macOS)
 

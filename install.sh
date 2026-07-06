@@ -1,5 +1,5 @@
 #!/bin/sh
-# dotfiles-installer
+# dotfiles-cli: installer and daily driver for this dotfiles repository.
 set -eu
 
 invocation_name=${0##*/}
@@ -38,6 +38,7 @@ resolve_script() {
 
 script_path=$(resolve_script "$script_path")
 repo_dir=$(dirname "$script_path")
+installer="$repo_dir/install.sh"
 
 xdg_config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
 xdg_data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
@@ -119,24 +120,6 @@ remove_owned_link() {
   fi
 }
 
-find_installer() {
-  if [ -f "$script_path" ] && grep -q '^# dotfiles-installer$' "$script_path"; then
-    printf '%s\n' "$script_path"
-    return 0
-  fi
-
-  for candidate in "$repo_dir"/*; do
-    [ -f "$candidate" ] || continue
-
-    if grep -q '^# dotfiles-installer$' "$candidate"; then
-      resolve_path "$candidate"
-      return 0
-    fi
-  done
-
-  return 1
-}
-
 managed_dirs() {
   for src in "$repo_dir"/*; do
     [ -d "$src" ] || continue
@@ -188,6 +171,9 @@ ensure_macos_command_line_tools() {
   exit 1
 }
 
+# Parity contract with zsh/.zprofile (see AGENTS.md): non-admin macOS users
+# install casks into $HOME/Applications, never /Applications. This copy covers
+# bootstrap/bundle from non-login contexts; .zprofile covers direct brew use.
 ensure_homebrew_cask_appdir() {
   [ "$(uname -s)" = Darwin ] || return 0
 
@@ -249,7 +235,6 @@ install_dotfiles() {
     printf 'skip: no zsh entrypoint found at %s\n' "$xdg_config_home/zsh/.zshenv"
   fi
 
-  installer=$(find_installer)
   link_path "$installer" "$user_bin_home/dotfiles"
 
   printf '\ndone.\n'
@@ -311,8 +296,7 @@ doctor_dotfiles() {
 
   printf 'zsh entrypoint: '
   if [ -L "$HOME/.zshenv" ]; then
-    target=$(resolve_script "$HOME/.zshenv")
-    printf '%s\n' "$target"
+    resolve_script "$HOME/.zshenv"
   elif [ -e "$HOME/.zshenv" ]; then
     printf 'exists but is not a symlink\n'
   else
@@ -382,37 +366,6 @@ cleanup_dotfiles() {
   printf 'cleanup complete.\n'
 }
 
-uninstall_dotfiles() {
-  managed_dirs | while IFS= read -r src; do
-    name=${src##*/}
-    remove_owned_link "$xdg_config_home/$name" "$src"
-  done
-
-  if [ -f "$repo_dir/zsh/.zshenv" ]; then
-    remove_owned_link "$HOME/.zshenv" "$repo_dir/zsh/.zshenv"
-  fi
-
-  installer=$(find_installer || true)
-
-  if [ -n "${installer:-}" ]; then
-    remove_owned_link "$user_bin_home/dotfiles" "$installer"
-  elif [ -L "$user_bin_home/dotfiles" ]; then
-    target=$(resolve_script "$user_bin_home/dotfiles")
-
-    case "$target" in
-      "$repo_dir"/*)
-        rm "$user_bin_home/dotfiles"
-        printf 'removed %s\n' "$user_bin_home/dotfiles"
-        ;;
-      *)
-        printf 'skip: not owned by this repo: %s\n' "$user_bin_home/dotfiles"
-        ;;
-    esac
-  fi
-
-  printf '\ndone.\n'
-}
-
 git_require_repo() {
   if ! command -v git >/dev/null 2>&1; then
     printf 'error: git is required\n' >&2
@@ -425,25 +378,8 @@ git_require_repo() {
   fi
 }
 
-git_current_branch() {
-  git -C "$repo_dir" symbolic-ref --quiet --short HEAD
-}
-
-git_upstream() {
-  git -C "$repo_dir" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null
-}
-
-git_upstream_remote() {
-  branch=$1
-  git -C "$repo_dir" config --get "branch.$branch.remote"
-}
-
 git_is_dirty() {
   [ -n "$(git -C "$repo_dir" status --porcelain)" ]
-}
-
-git_has_unmerged_paths() {
-  [ -n "$(git -C "$repo_dir" diff --name-only --diff-filter=U)" ]
 }
 
 git_status_summary() {
@@ -478,262 +414,19 @@ git_log_summary() {
   fi
 }
 
-status_dotfiles() {
-  printf 'dotfiles repo: %s\n' "$repo_dir"
-
-  if [ ! -d "$repo_dir/.git" ]; then
-    printf 'not a git repo\n'
-    return 0
-  fi
-
-  if ! command -v git >/dev/null 2>&1; then
-    printf 'git is not available\n'
-    return 0
-  fi
-
-  printf '\n'
-  git -C "$repo_dir" status --short --branch
-
-  stashes=$(git -C "$repo_dir" stash list 2>/dev/null | sed -n '1,5p' || true)
-
-  if [ -n "$stashes" ]; then
-    printf '\nstashes:\n'
-    printf '%s\n' "$stashes" | sed 's/^/  /'
-  fi
-}
-
-setup_signing_key() {
-  email=${1:-}
-  context=${2:-}
-  name=${3:-}
-
-  # Interactive prompt if arguments are missing
-  if [ -z "$email" ]; then
-    printf 'Enter the email to use for the SSH key: '
-    read -r email
-  fi
-
-  if [ -z "$name" ]; then
-    printf 'Enter the Git author name (e.g., Trillian Astra): '
-    read -r name
-  fi
-
-  if [ -z "$context" ]; then
-    printf 'Select context [local/personal/work] (default: local): '
-    read -r context
-    context=${context:-local}
-  fi
-
-  # Validate inputs
-  if [ -z "$email" ]; then
-    printf 'error: email cannot be empty.\n' >&2
-    exit 1
-  fi
-
-  if [ -z "$name" ]; then
-    printf 'error: Git profile name cannot be empty.\n' >&2
-    exit 1
-  fi
-
-  # Validate strict context taxonomy
-  case "$context" in
-    local|personal|work) ;;
-    *)
-      printf 'error: context must be "local", "personal", or "work"\n' >&2
-      exit 1
-      ;;
-  esac
-
-  # Map context to file structure
-  if [ "$context" = "local" ]; then
-    key_name="id_ed25519"
-  else
-    key_name="id_ed25519_${context}"
-  fi
-
-  key_path="$HOME/.ssh/$key_name"
-  git_config_target="config.d/${context}"
-
-  mkdir -p "$HOME/.ssh"
-  chmod 700 "$HOME/.ssh"
-
-  # 1. Validation & Key Generation
-  if [ -f "$key_path" ]; then
-    printf 'notice: SSH key %s already exists.\n' "$key_path"
-    printf 'Do you want to (r)euse, (o)verwrite, or (c)ancel? [r/o/c]: '
-    read -r action
-    case "$action" in
-      [oO]*)
-        rm -f "$key_path" "${key_path}.pub"
-        ssh-keygen -t ed25519 -C "$email" -f "$key_path"
-        ;;
-      [rR]*) ;; # reuse
-      *) exit 0 ;;
-    esac
-  else
-    ssh-keygen -t ed25519 -C "$email" -f "$key_path"
-  fi
-
-  # 2. Local Verification (allowed_signers)
-  allowed_signers="$HOME/.ssh/allowed_signers"
-  touch "$allowed_signers"
-  chmod 600 "$allowed_signers"
-  
-  if grep -v "^$email " "$allowed_signers" > "${allowed_signers}.tmp" 2>/dev/null; then
-    mv "${allowed_signers}.tmp" "$allowed_signers"
-  else
-    > "$allowed_signers"
-  fi
-  printf '%s %s\n' "$email" "$(cat "${key_path}.pub")" >> "$allowed_signers"
-
-  # 3. Contextual Git Configuration
-  local_git_config="$XDG_CONFIG_HOME/git/$git_config_target"
-  mkdir -p "$(dirname "$local_git_config")"
-  
-  git config --file "$local_git_config" user.name "$name"
-  git config --file "$local_git_config" user.email "$email"
-  git config --file "$local_git_config" user.signingkey "${key_path}.pub"
-  git config --file "$local_git_config" commit.gpgsign true
-  git config --file "$local_git_config" tag.gpgsign true
-  git config --file "$local_git_config" gpg.format ssh
-  git config --file "$local_git_config" gpg.ssh.allowedSignersFile "$allowed_signers"
-
-  # 4. Persistent Agent Integration
-  ssh_config="$HOME/.ssh/config"
-  touch "$ssh_config"
-  chmod 600 "$ssh_config"
-
-  if [ "$(uname -s)" = Darwin ]; then
-    if ! grep -q "UseKeychain" "$ssh_config"; then
-      printf 'Host *\n  AddKeysToAgent yes\n  UseKeychain yes\n\n' | cat - "$ssh_config" > "${ssh_config}.tmp" && mv "${ssh_config}.tmp" "$ssh_config"
-    fi
-    ssh-add --apple-use-keychain "$key_path"
-  else
-    if ! grep -q "AddKeysToAgent" "$ssh_config"; then
-      printf 'Host *\n  AddKeysToAgent yes\n\n' | cat - "$ssh_config" > "${ssh_config}.tmp" && mv "${ssh_config}.tmp" "$ssh_config"
-    fi
-    [ -z "${SSH_AUTH_SOCK:-}" ] && eval "$(ssh-agent -s)" >/dev/null 2>&1
-    ssh-add "$key_path"
-  fi
-
-  printf '\nSetup complete. Public key:\n%s\n' "$(cat "${key_path}.pub")"
-}
-
-update_help() {
-  cat <<EOF
-usage: dotfiles update [--stash|--discard] [--yes]
-
-Safely update this dotfiles repository, then reinstall symlinks.
-
-Default behavior:
-  dotfiles update
-    Fetches upstream and updates when clean.
-    If local changes exist, shows what changed and asks what to do.
-    If unresolved conflicts exist, refuses stash and explains safe routes.
-
-Conflict-friendly options:
-  dotfiles update --stash
-    Save local changes in git stash, update the repo, and leave the stash saved.
-    This is unavailable while Git has unresolved merge conflicts.
-
-  dotfiles update --discard
-    Show local changes, ask for confirmation, then discard local repo changes
-    and reset to upstream.
-
-  dotfiles update --discard --yes
-    Discard local repo changes without prompting.
-    Use this for the easiest seamless update when you do not care about local edits.
-
-Manual escape hatches:
-  dotfiles status
-    Inspect repo status.
-
-  git -C "$repo_dir" stash list
-    See saved stashes.
-
-  git -C "$repo_dir" merge --abort
-  git -C "$repo_dir" rebase --abort
-    Abort an in-progress Git operation when available.
-
-  git -C "$repo_dir" reset --hard @{upstream}
-  git -C "$repo_dir" clean -fd
-    Manually discard local changes and untracked files.
-EOF
-}
-
-print_dirty_update_guidance() {
-  cat >&2 <<EOF
-
-Local changes exist in this dotfiles repo.
-
-Choose one of these routes:
-
-  dotfiles update --stash
-    Save local edits in git stash, update, and leave the stash saved.
-
-  dotfiles update --discard
-    Review and discard local edits, then update to the remote state.
-
-  dotfiles update --discard --yes
-    Seamlessly discard local edits and update without prompting.
-
-  dotfiles status
-    Inspect the current repo state.
-
-Default update asks what to do in an interactive shell and refuses to continue
-in non-interactive use, so it does not leave conflict markers in active config
-files.
-
-EOF
-}
-
-print_unmerged_update_guidance() {
-  cat >&2 <<EOF
-
-This dotfiles repo has unresolved merge conflicts.
-
-Stashing is not available while Git has unmerged paths.
-
-Choose one of these routes:
-
-  dotfiles status
-    Inspect conflicted files.
-
-  git -C "$repo_dir" merge --abort
-  git -C "$repo_dir" rebase --abort
-    Abort the in-progress Git operation when available.
-
-  dotfiles update --discard
-    Review and discard the conflicted local state, then reset to upstream.
-
-  dotfiles update --discard --yes
-    Seamlessly discard the conflicted local state and reset to upstream.
-
-EOF
-}
-
-print_diverged_update_guidance() {
-  upstream=$1
-
-  cat >&2 <<EOF
-
-Local and upstream histories have diverged.
-
-Automatic update is not safe because this repo has local commits that are not
-in upstream, while upstream also has commits that are not local.
-
-Recommended routes:
-
-  git -C "$repo_dir" rebase "$upstream"
-    Preserve local commits by rebasing them on top of upstream.
-
-  dotfiles update --discard
-    Review and discard local commits/changes, then reset to upstream.
-
-  dotfiles update --discard --yes
-    Seamlessly discard local commits/changes and reset to upstream.
-
-EOF
+print_update_hints() {
+  {
+    printf '\nRoutes:\n'
+    printf '  dotfiles update --discard\n'
+    printf '    Review and discard local repo changes, then reset to upstream.\n'
+    printf '  dotfiles update --discard --yes\n'
+    printf '    Same, without prompting.\n'
+    printf '  git -C "%s" stash push -u && dotfiles update && git -C "%s" stash pop\n' "$repo_dir" "$repo_dir"
+    printf '    Preserve local edits around the update yourself.\n'
+    printf '  dotfiles status\n'
+    printf '    Inspect the current repo state.\n'
+    printf '\n'
+  } >&2
 }
 
 confirm_discard() {
@@ -761,149 +454,6 @@ confirm_discard() {
   fi
 }
 
-choose_update_mode() {
-  if [ ! -t 0 ]; then
-    print_dirty_update_guidance
-    return 1
-  fi
-
-  {
-    printf '\nLocal changes exist. Choose how to continue:\n'
-    printf '  s) stash local changes, update, and leave them stashed\n'
-    printf '  d) discard local changes and update\n'
-    printf '  a) abort\n'
-  } >&2
-
-  while :; do
-    printf 'choice [s/d/a]: ' >&2
-    IFS= read -r choice
-
-    case "$choice" in
-      s|S|stash)
-        printf 'stash\n'
-        return 0
-        ;;
-      d|D|discard)
-        printf 'discard\n'
-        return 0
-        ;;
-      a|A|abort|'')
-        return 1
-        ;;
-      *)
-        printf 'please choose s, d, or a.\n' >&2
-        ;;
-    esac
-  done
-}
-
-choose_unmerged_mode() {
-  if [ ! -t 0 ]; then
-    print_unmerged_update_guidance
-    return 1
-  fi
-
-  {
-    printf '\nUnresolved merge conflicts exist. Choose how to continue:\n'
-    printf '  d) discard conflicted local state and update\n'
-    printf '  a) abort\n'
-  } >&2
-
-  while :; do
-    printf 'choice [d/a]: ' >&2
-    IFS= read -r choice
-
-    case "$choice" in
-      d|D|discard)
-        printf 'discard\n'
-        return 0
-        ;;
-      a|A|abort|'')
-        return 1
-        ;;
-      *)
-        printf 'please choose d or a.\n' >&2
-        ;;
-    esac
-  done
-}
-
-reinstall_after_update() {
-  installer=$(find_installer) || {
-    printf 'error: could not find dotfiles installer after update\n' >&2
-    exit 1
-  }
-
-  exec sh "$installer" install
-}
-
-fast_forward_update() {
-  upstream=$1
-
-  printf '\nupdating %s\n' "$repo_dir"
-  printf 'fast-forwarding to %s\n' "$upstream"
-
-  if ! git -C "$repo_dir" merge --ff-only "$upstream"; then
-    printf '\nerror: fast-forward update failed.\n' >&2
-    print_dirty_update_guidance
-    exit 1
-  fi
-
-  reinstall_after_update
-}
-
-stash_update() {
-  upstream=$1
-  stash_name="dotfiles update $(timestamp)"
-  did_stash=0
-
-  if git_has_unmerged_paths; then
-    print_unmerged_update_guidance
-    exit 1
-  fi
-
-  if git_is_dirty; then
-    printf '\nstashing local changes...\n'
-    git -C "$repo_dir" stash push --include-untracked -m "$stash_name"
-    did_stash=1
-
-    printf '\nlocal changes saved in git stash:\n'
-    git -C "$repo_dir" stash list | sed -n '1p'
-  fi
-
-  if [ "$(git -C "$repo_dir" rev-parse HEAD)" != "$(git -C "$repo_dir" rev-parse "$upstream")" ]; then
-    printf '\nfast-forwarding to %s\n' "$upstream"
-
-    if ! git -C "$repo_dir" merge --ff-only "$upstream"; then
-      printf '\nerror: update failed after stashing local changes.\n' >&2
-      printf 'Your local changes are preserved in git stash.\n' >&2
-      printf '\nUseful commands:\n' >&2
-      printf '  dotfiles status\n' >&2
-      printf '  git -C "%s" stash list\n' "$repo_dir" >&2
-      printf '  git -C "%s" stash show --stat\n' "$repo_dir" >&2
-      printf '  dotfiles update --discard\n' >&2
-      exit 1
-    fi
-  fi
-
-  if [ "$did_stash" = 1 ]; then
-    cat <<EOF
-
-Your local changes were preserved in git stash and were not reapplied
-automatically, to avoid conflict markers in active config files.
-
-Useful commands:
-  dotfiles status
-  git -C "$repo_dir" stash list
-  git -C "$repo_dir" stash show --stat
-  git -C "$repo_dir" stash pop
-
-EOF
-  fi
-
-  reinstall_after_update
-}
-
 discard_update() {
   upstream=$1
   assume_yes=$2
@@ -919,80 +469,64 @@ discard_update() {
   reinstall_after_update
 }
 
-handle_unmerged_update() {
-  upstream=$1
-  update_mode=$2
-  assume_yes=$3
-
-  case "$update_mode" in
-    discard)
-      discard_update "$upstream" "$assume_yes"
-      ;;
-    ask)
-      chosen_mode=$(choose_unmerged_mode) || {
-        printf 'aborted.\n'
-        exit 1
-      }
-
-      case "$chosen_mode" in
-        discard)
-          discard_update "$upstream" "$assume_yes"
-          ;;
-      esac
-      ;;
-    stash)
-      print_unmerged_update_guidance
-      exit 1
-      ;;
-  esac
+reinstall_after_update() {
+  exec sh "$installer" install
 }
 
-handle_dirty_update() {
+fast_forward_update() {
   upstream=$1
-  update_mode=$2
-  assume_yes=$3
 
-  git_status_summary
-  git_log_summary "$upstream"
+  printf '\nupdating %s\n' "$repo_dir"
+  printf 'fast-forwarding to %s\n' "$upstream"
 
-  if git_has_unmerged_paths; then
-    handle_unmerged_update "$upstream" "$update_mode" "$assume_yes"
+  if ! git -C "$repo_dir" merge --ff-only "$upstream"; then
+    printf '\nerror: fast-forward update failed.\n' >&2
+    print_update_hints
+    exit 1
   fi
 
-  case "$update_mode" in
-    stash)
-      stash_update "$upstream"
-      ;;
-    discard)
-      discard_update "$upstream" "$assume_yes"
-      ;;
-    ask)
-      chosen_mode=$(choose_update_mode) || {
-        printf 'aborted.\n'
-        exit 1
-      }
+  reinstall_after_update
+}
 
-      case "$chosen_mode" in
-        stash)
-          stash_update "$upstream"
-          ;;
-        discard)
-          discard_update "$upstream" "$assume_yes"
-          ;;
-      esac
-      ;;
-  esac
+update_help() {
+  cat <<EOF
+usage: dotfiles update [--discard] [--yes]
+
+Safely update this dotfiles repository, then reinstall symlinks.
+
+Default behavior:
+  dotfiles update
+    Fetches upstream and fast-forwards when the repo is clean.
+    Refuses to touch local changes; explains the safe routes instead.
+
+Options:
+  dotfiles update --discard
+    Show local changes, ask for confirmation, then discard local repo changes
+    and reset to upstream.
+
+  dotfiles update --discard --yes
+    Discard local repo changes without prompting.
+    Use this for the easiest seamless update when you do not care about local edits.
+
+Manual escape hatches:
+  dotfiles status
+    Inspect repo status.
+
+  git -C "$repo_dir" stash push -u
+    Preserve local edits before updating; pop them after.
+
+  git -C "$repo_dir" reset --hard @{upstream}
+  git -C "$repo_dir" clean -fd
+    Manually discard local changes and untracked files.
+EOF
 }
 
 update_dotfiles() {
-  update_mode=ask
+  update_mode=default
   assume_yes=0
 
   while [ "$#" -gt 0 ]; do
     case "$1" in
-      --stash)
-        update_mode=stash
-        ;;
       --discard)
         update_mode=discard
         ;;
@@ -1015,7 +549,7 @@ update_dotfiles() {
 
   git_require_repo
 
-  branch=$(git_current_branch || true)
+  branch=$(git -C "$repo_dir" symbolic-ref --quiet --short HEAD || true)
 
   if [ -z "$branch" ]; then
     printf 'error: dotfiles repo is in detached HEAD state\n' >&2
@@ -1023,7 +557,7 @@ update_dotfiles() {
     exit 1
   fi
 
-  upstream=$(git_upstream || true)
+  upstream=$(git -C "$repo_dir" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)
 
   if [ -z "$upstream" ]; then
     printf 'error: current branch has no upstream configured\n' >&2
@@ -1032,14 +566,7 @@ update_dotfiles() {
     exit 1
   fi
 
-  remote=$(git_upstream_remote "$branch" || true)
-
-  if [ -z "$remote" ]; then
-    printf 'error: could not determine upstream remote for branch %s\n' "$branch" >&2
-    printf 'hint: inspect with:\n' >&2
-    printf '  git -C "%s" branch -vv\n' "$repo_dir" >&2
-    exit 1
-  fi
+  remote=${upstream%%/*}
 
   printf 'fetching %s for %s\n' "$remote" "$upstream"
   git -C "$repo_dir" fetch --prune "$remote"
@@ -1048,80 +575,216 @@ update_dotfiles() {
   upstream_rev=$(git -C "$repo_dir" rev-parse "$upstream")
   base_rev=$(git -C "$repo_dir" merge-base HEAD "$upstream")
 
+  if [ "$update_mode" = discard ]; then
+    discard_update "$upstream" "$assume_yes"
+  fi
+
   if [ "$local_rev" = "$upstream_rev" ]; then
+    # Up to date: nothing incoming; leave local work untouched
+    printf 'ok: dotfiles repo already up to date\n'
+
     if git_is_dirty; then
-      handle_dirty_update "$upstream" "$update_mode" "$assume_yes"
+      printf 'note: local changes exist and were left untouched\n'
+      printf 'hint: inspect them with: dotfiles status\n'
     fi
 
-    printf 'ok: dotfiles repo already up to date\n'
     reinstall_after_update
-  fi
-
-  if [ "$base_rev" = "$upstream_rev" ]; then
+  elif [ "$base_rev" = "$upstream_rev" ]; then
+    # Ahead of upstream: nothing incoming; nothing to merge
     git_log_summary "$upstream"
 
-    case "$update_mode" in
-      discard)
-        discard_update "$upstream" "$assume_yes"
-        ;;
-      *)
-        if git_is_dirty; then
-          handle_dirty_update "$upstream" "$update_mode" "$assume_yes"
-        fi
+    printf '\nlocal branch is ahead of upstream; no remote update is needed.\n'
+    printf 'hint: publish local commits with: git -C "%s" push\n' "$repo_dir"
+    printf 'hint: discard local commits with: dotfiles update --discard\n'
 
-        printf '\nlocal branch is ahead of upstream; no remote update is needed.\n'
-        printf 'hint: publish local commits with: git -C "%s" push\n' "$repo_dir"
-        printf 'hint: discard local commits with: dotfiles update --discard\n'
-
-        reinstall_after_update
-        ;;
-    esac
-  fi
-
-  if [ "$base_rev" != "$local_rev" ]; then
+    reinstall_after_update
+  elif [ "$base_rev" != "$local_rev" ]; then
+    # Diverged: local and upstream both have exclusive commits
     git_status_summary
     git_log_summary "$upstream"
 
-    case "$update_mode" in
-      discard)
-        discard_update "$upstream" "$assume_yes"
-        ;;
-      *)
-        print_diverged_update_guidance "$upstream"
-        exit 1
-        ;;
-    esac
+    {
+      printf '\nLocal and upstream histories have diverged.\n'
+      printf 'Automatic update is not safe. Preserve local commits with:\n'
+      printf '  git -C "%s" rebase "%s"\n' "$repo_dir" "$upstream"
+    } >&2
+    print_update_hints
+    exit 1
+  else
+    # Behind upstream only: fast-forwardable
+    if git_is_dirty; then
+      git_status_summary
+      git_log_summary "$upstream"
+
+      printf '\nerror: local changes exist; refusing to update over them.\n' >&2
+      print_update_hints
+      exit 1
+    fi
+
+    fast_forward_update "$upstream"
+  fi
+}
+
+status_dotfiles() {
+  printf 'dotfiles repo: %s\n' "$repo_dir"
+
+  if [ ! -d "$repo_dir/.git" ]; then
+    printf 'not a git repo\n'
+    return 0
   fi
 
-  if git_is_dirty; then
-    handle_dirty_update "$upstream" "$update_mode" "$assume_yes"
+  if ! command -v git >/dev/null 2>&1; then
+    printf 'git is not available\n'
+    return 0
   fi
 
-  fast_forward_update "$upstream"
+  printf '\n'
+  git -C "$repo_dir" status --short --branch
+
+  stashes=$(git -C "$repo_dir" stash list 2>/dev/null | sed -n '1,5p' || true)
+
+  if [ -n "$stashes" ]; then
+    printf '\nstashes:\n'
+    printf '%s\n' "$stashes" | sed 's/^/  /'
+  fi
+}
+
+uninstall_dotfiles() {
+  managed_dirs | while IFS= read -r src; do
+    name=${src##*/}
+    remove_owned_link "$xdg_config_home/$name" "$src"
+  done
+
+  if [ -f "$repo_dir/zsh/.zshenv" ]; then
+    remove_owned_link "$HOME/.zshenv" "$repo_dir/zsh/.zshenv"
+  fi
+
+  remove_owned_link "$user_bin_home/dotfiles" "$installer"
+
+  printf '\ndone.\n'
+}
+
+workspace_help() {
+  cat <<'EOF'
+usage: dotfiles workspace [DIR]
+       dotfiles code [DIR]
+
+Launch a Ghostty coding workspace layout (macOS only).
+
+Arguments:
+  DIR   Workspace directory. Defaults to the current directory.
+
+Layout:
+  left           editor
+  middle top     shell
+  middle bottom  shell
+  right          agent
+
+Environment:
+  DOTFILES_WORKSPACE=0
+      Disable this launcher.
+
+  DOTFILES_WORKSPACE_SCRIPT=/path/to/workspace.applescript
+      Override the AppleScript implementation path.
+
+  DOTFILES_WORKSPACE_EDITOR_CMD='nvim .'
+      Command started in the left pane.
+
+  DOTFILES_WORKSPACE_AGENT_CMD='ocode'
+      Command started in the right pane.
+
+  DOTFILES_WORKSPACE_MIDDLE_TOP_CMD=''
+      Optional command started in the middle-top pane.
+
+  DOTFILES_WORKSPACE_MIDDLE_BOTTOM_CMD=''
+      Optional command started in the middle-bottom pane.
+EOF
+}
+
+workspace_dotfiles() {
+  if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+    workspace_help
+    return 0
+  fi
+
+  case "${DOTFILES_WORKSPACE:-1}" in
+    0|false|FALSE|off|OFF|no|NO)
+      printf 'ghostty workspace: disabled by DOTFILES_WORKSPACE\n' >&2
+      return 0
+      ;;
+  esac
+
+  if [ "$(uname -s)" != Darwin ]; then
+    printf 'ghostty workspace: Ghostty AppleScript automation requires macOS\n' >&2
+    exit 1
+  fi
+
+  if [ ! -x /usr/bin/osascript ]; then
+    printf 'ghostty workspace: /usr/bin/osascript not found\n' >&2
+    exit 1
+  fi
+
+  workspace_dir=${1:-$PWD}
+
+  if [ ! -d "$workspace_dir" ]; then
+    printf 'ghostty workspace: not a directory: %s\n' "$workspace_dir" >&2
+    exit 1
+  fi
+
+  workspace_dir=$(
+    cd -P "$workspace_dir" 2>/dev/null && pwd
+  ) || {
+    printf 'ghostty workspace: could not resolve directory: %s\n' "$workspace_dir" >&2
+    exit 1
+  }
+
+  workspace_script=${DOTFILES_WORKSPACE_SCRIPT:-"$xdg_config_home/ghostty/workspace.applescript"}
+
+  if [ ! -r "$workspace_script" ]; then
+    printf 'ghostty workspace: missing script: %s\n' "$workspace_script" >&2
+    printf 'hint: run: dotfiles install\n' >&2
+    exit 1
+  fi
+
+  output=$(
+    /usr/bin/osascript \
+      "$workspace_script" \
+      "$workspace_dir" \
+      "${DOTFILES_WORKSPACE_EDITOR_CMD:-nvim .}" \
+      "${DOTFILES_WORKSPACE_AGENT_CMD:-ocode}" \
+      "${DOTFILES_WORKSPACE_MIDDLE_TOP_CMD:-}" \
+      "${DOTFILES_WORKSPACE_MIDDLE_BOTTOM_CMD:-}" \
+      2>&1
+  ) || {
+    rc=$?
+    output=$(printf '%s\n' "$output" | tr '\n' ' ')
+    [ -n "$output" ] || output="osascript exited with status $rc"
+
+    printf 'ghostty workspace: %s\n' "$output" >&2
+    exit "$rc"
+  }
 }
 
 usage() {
   cat <<EOF
-usage: dotfiles [install|update|bootstrap|bundle|status|doctor|cleanup|uninstall|help]
+usage: dotfiles [install|update|bootstrap|bundle|status|doctor|cleanup|uninstall|workspace|code|help]
 
 commands:
   install     link repo config directories into XDG_CONFIG_HOME
-  update      fetch upstream, safely update repo, then install
+  update      fetch upstream, fast-forward when clean, then install
   bootstrap   install links, ensure Homebrew, then run brew bundle
   bundle      run brew bundle for this dotfiles Brewfile
   status      show dotfiles repo status
   doctor      show environment status and next steps
   cleanup     remove only safe empty legacy home files
   uninstall   remove symlinks owned by this repo
-  signkey     generate and configure an SSH commit signing key
+  workspace   launch Ghostty coding workspace layout (macOS)
+  code        alias for workspace
   help        show this usage help message
 
 update examples:
   dotfiles update
-    Safe default. Updates when clean; prompts when local changes exist.
-
-  dotfiles update --stash
-    Preserve local edits by saving them in git stash.
+    Safe default. Updates when clean; refuses to touch local changes.
 
   dotfiles update --discard
     Review and discard local edits/commits, then reset to upstream.
@@ -1177,8 +840,8 @@ case "$cmd" in
   uninstall)
     uninstall_dotfiles "$@"
     ;;
-  signkey)
-    setup_signing_key "$@"
+  workspace|code)
+    workspace_dotfiles "$@"
     ;;
   -h|--help|help|--usage|usage)
     usage
@@ -1189,3 +852,4 @@ case "$cmd" in
     exit 1
     ;;
 esac
+

@@ -1,2 +1,4 @@
+# vim: ft=gitconfig
+
 [core]
   autocrlf = true
