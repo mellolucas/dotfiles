@@ -4,8 +4,10 @@ brew "git"
 brew "neovim"
 brew "ripgrep"
 brew "fzf"
-brew "glow"
 brew "bat"
+brew "git-delta"
+brew "glow"
+
 cask "ghostty" if OS.mac?
 brew "container" if OS.mac?
 
