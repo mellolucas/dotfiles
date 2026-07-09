@@ -57,6 +57,18 @@
   decorate = short
   date = iso-strict
 
+[core]
+  pager = delta # Use delta as text viewer for git commands
+
+[delta]
+  syntax-theme = Catppuccin Mocha
+  side-by-side = true
+  line-numbers-left-format = ""
+  line-numbers-right-format = "│{nm:<2}┊{np:>2}│"
+
+[interactive]
+  diffFilter = delta --color-only # Pipe colorized diffs through delta
+
 [diff]
   algorithm = histogram # Use histogram diff algorithm for clearer diffs
   colorMoved = plain # Highlight any moved lines in diffs
