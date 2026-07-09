@@ -77,6 +77,6 @@ print -P -- "%F{8}worktree%f  ${(j: · :)wt}"
 (( $#others ))  && print -P -- "%F{8}branches%f  ${(j: · :)others}"
 if git rev-parse -q --verify HEAD >/dev/null 2>&1; then
   print
-  git --no-pager log -3 --pretty=truncated"
+  git --no-pager log -3 --pretty=truncated
 fi
 print
