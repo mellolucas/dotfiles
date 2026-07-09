@@ -104,19 +104,34 @@ alias vi='$EDITOR'
 alias vim='$EDITOR'
 alias view='$EDITOR -R -M'
 
+
 alias mdv='glow -p'
 
-alias b='bat'
-alias bh='bat --plain --language=help'
-help() {
-  bh <<<$("$@" --help 2>&1)
-}
+if command -v bat >/dev/null 2>&1; then
+  alias cat='bat --paging=never --style=plain'
+  alias b='bat'
+  alias bh='bat --plain --language=help'
+  help() {
+    bh <<<$("$@" --help 2>&1)
+  }
+
+  alias fzfv='fzf --preview "bat --color=always --style=numbers --line-range=:500 {}" --bind "enter:become(nvim {})"'
+fi
+
 
 alias ll='ls -plhA' # List long
 alias lli='ll -i'   # List long with inodes
 
-alias rg='rg --hidden --follow'
+alias rg='rg --hidden --follow --smart-case --glob="!.git/*" --max-columns=120 --max-columns-preview'
+alias rga='--no-ignore --glob="!.git/*"' 
 alias rgf='rg --files-with-matches'
+alias rgfa='rga --files-with-matches'
+alias rgc='rg --count'
+alias rgca='rga --count'
+alias rgw='rg --word-regexp'
+alias rgwa='rga --word-regexp'
+alias rgwc='rgw --count'
+alias rgwca='rgwa --count'
 
 alias cmdv='command -v' 
 if ! command -v where >/dev/null 2>&1; then
