@@ -57,6 +57,7 @@ if command -v git-glance >/dev/null 2>&1; then
     top=$(git rev-parse --show-toplevel 2>/dev/null) || { _git_glance_last=''; return 0 }
     [[ $top == $_git_glance_last ]] && return 0
     _git_glance_last=$top
+    printf '\n%.0s' {1..$(tput lines)}
     tput cup 0 0
     git-glance
   }
