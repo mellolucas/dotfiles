@@ -105,7 +105,7 @@ alias vi='$EDITOR'
 alias vim='$EDITOR'
 alias view='$EDITOR -R -M'
 
-
+alias glow='glow --style "${XDG_CONFIG_HOME:-$HOME}/glow/theme.json"'
 alias mdv='glow -p'
 
 if command -v bat >/dev/null 2>&1; then
@@ -113,7 +113,7 @@ if command -v bat >/dev/null 2>&1; then
   alias b='bat'
   alias bh='bat --plain --language=help'
   help() {
-    bh <<<$("$@" --help 2>&1)
+    bat --plain --language=help <<<$("$@" --help 2>&1)
   }
 
   alias fzfv='fzf --preview "bat --color=always --style=numbers --line-range=:500 {}" --bind "enter:become(nvim {})"'
