@@ -1,6 +1,7 @@
 theme = dark:Catppuccin Mocha,light:Catppuccin Latte
 
-config-file = vim.ghostty
+window-save-state = always
 
 scroll-to-bottom = no-keystroke, output
+config-file = vim.ghostty
 
